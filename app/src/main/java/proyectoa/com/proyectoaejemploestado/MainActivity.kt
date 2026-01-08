@@ -59,6 +59,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import proyectoa.com.proyectoaejemploestado.ui.theme.ProyectoAEjemploEstadoTheme
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -68,16 +69,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
-               val navController=rememberNavController()
+        ProyectoAEjemploEstadoTheme() {
+            val navController=rememberNavController()
 
             NavHost(
-            navController=navController,
-            startDestination="MainActivity"
+                navController=navController,
+                startDestination="MainActivity"
             ){
                 composable("MainActivity"){EstadoLayout(navController)}
                 composable("Funcionamiento"){pantallaFuncionamiento(navController)}
             }
+        }
+
        }
     }
 }
@@ -91,143 +94,149 @@ fun EstadoLayout(navController: NavController) {
     var porcBeneficioEntrada by remember { mutableStateOf("") }
     var redondeoEntradaAlza by remember { mutableStateOf(false) }
     var redondeoEntradaNormal by remember { mutableStateOf(false) }
-    var noRedondeoEntrada by remember { mutableStateOf(true)}
+    var noRedondeoEntrada by remember { mutableStateOf(true) }
 
     // Convertimos los valores de entrada y realizamos los cálculos
     // para algunas hay que hacer una conversión
     val importe = importeEntrada.toDoubleOrNull() ?: 0.0
     val porcBeneficio = porcBeneficioEntrada.toDoubleOrNull() ?: 0.0
-    val importeBeneficio = calcularBeneficio(importe, porcBeneficio,
-        redondeoEntradaAlza, redondeoEntradaNormal)
+    val importeBeneficio = calcularBeneficio(
+        importe, porcBeneficio,
+        redondeoEntradaAlza, redondeoEntradaNormal
+    )
 
     val context = LocalContext.current
-
-    Column(
-        modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 40.dp)
-            .verticalScroll(rememberScrollState())
-            .safeDrawingPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-            IconButton(onClick = {
-                navController.navigate("Funcionamiento")
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(horizontal = 40.dp)
+                .verticalScroll(rememberScrollState())
+                .safeDrawingPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                IconButton(onClick = {
+                    navController.navigate("Funcionamiento")
 
 
-            }, modifier = Modifier) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_arrow_back_ios_24),
-                    contentDescription = "flecha h  acia atras"
-                )
+                }, modifier = Modifier) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_arrow_back_ios_24),
+                        contentDescription = "flecha h  acia atras"
+                    )
 
+                }
             }
-        }
-        Text(
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier
-                .padding(bottom = 1.dp, top = 10.dp)
-                .align(alignment = Alignment.CenterHorizontally)
-        )
-        Text(
-            text = stringResource(R.string.texto_informativo),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier
-                .padding(bottom = 16.dp, top = 10.dp)
-                .align(alignment = Alignment.Start)
-        )
-        val focusManager = LocalFocusManager.current
-        // Mostramos el campo para introducir el importe
-        // Establecemos el teclado de tipo numérico (el simulador puede no permitirlo)
-        // Establecemos la tecla de acción "Siguiente"
-        CampoNumero(
-            label = R.string.importe_base,
-            leadingIcon = R.drawable.moneda,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Decimal,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions (
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(bottom = 1.dp, top = 10.dp)
+                    .align(alignment = Alignment.CenterHorizontally)
+            )
+            Text(
+                text = stringResource(R.string.texto_informativo),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .padding(bottom = 16.dp, top = 10.dp)
+                    .align(alignment = Alignment.Start)
+            )
+            val focusManager = LocalFocusManager.current
+            // Mostramos el campo para introducir el importe
+            // Establecemos el teclado de tipo numérico (el simulador puede no permitirlo)
+            // Establecemos la tecla de acción "Siguiente"
+            CampoNumero(
+                label = R.string.importe_base,
+                leadingIcon = R.drawable.moneda,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
 
-            ),
-            value = importeEntrada,
-            onValueChanged = { importeEntrada = it },
-            modifier = Modifier
-                .padding(bottom = 20.dp)
-                .fillMaxWidth(),
-        )
-        // Mostramos el campo para introducir el porcentaje de beneficio
-        // reutilizamos el composable CampoNumero
-        // Establecemos el teclado de tipo numérico
-        // Establecemos la tecla de acción "Validar"
-        CampoNumero(
-            label = R.string.porcentaje_beneficio,
-            leadingIcon = R.drawable.porcentaje,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }),
-            value = porcBeneficioEntrada,
-            onValueChanged = { porcBeneficioEntrada = it },
-            modifier = Modifier
-                .padding(bottom = 25.dp)
-                .fillMaxWidth(),
-        )
-        // Mostramos el campo de switch (interruptor) para Sin redondeo
-        CampoNoRedondeo(
-            roundUp = noRedondeoEntrada,
-            onRoundUpChanged = {
-                // Si se activa el No redondeo, se desactivan los redondeos
-                noRedondeoEntrada = it
-                if (noRedondeoEntrada) {
-                    redondeoEntradaAlza = false
-                    redondeoEntradaNormal = false
-                }
-                // Si no se activa el No redondeo, activar el redondeo al alza
-                if (!noRedondeoEntrada && !redondeoEntradaAlza && !redondeoEntradaNormal)
-                    redondeoEntradaAlza = true
-            },
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
-        // Mostramos el campo de switch (interruptor) para Redondear benieficio al alza
-        CampoRedondeoAlza(
-            roundUp = redondeoEntradaAlza,
-            onRoundUpChanged = {
-                redondeoEntradaAlza = it
-                // Si se activa el redondeo al alza, desactivar el redondeo normal y el sin redondeo
-                if (redondeoEntradaAlza) {
-                    redondeoEntradaNormal = false
-                    noRedondeoEntrada = false
-                }
-            },
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
-        // Mostramos el campo de switch (interruptor) para Redondear benieficio normal
-        CampoRedondeoNormal(
-            roundUp = redondeoEntradaNormal,
-            onRoundUpChanged = {
-                redondeoEntradaNormal = it
-                // Si se activa el redondeo normal, desactivar el redondeo al alza y el sin redondeo
-                if (redondeoEntradaNormal) {
-                    redondeoEntradaAlza = false
-                    noRedondeoEntrada = false
-                }
-            },
-            modifier = Modifier.padding(bottom = 20.dp)
-        )
-        // Mostramos el importe de beneficio calculado
-        Text(
-            text = stringResource(R.string.importe_beneficio, importeBeneficio),
-            style = MaterialTheme.typography.titleLarge
-        )
-        // Mostramos el botón copiar el beneficio al portapapeles
-        BotonCopiar {
-            copiarTextoPortapapeles(importeBeneficio, context)
+                ),
+                value = importeEntrada,
+                onValueChanged = { importeEntrada = it },
+                modifier = Modifier
+                    .padding(bottom = 20.dp)
+                    .fillMaxWidth(),
+            )
+            // Mostramos el campo para introducir el porcentaje de beneficio
+            // reutilizamos el composable CampoNumero
+            // Establecemos el teclado de tipo numérico
+            // Establecemos la tecla de acción "Validar"
+            CampoNumero(
+                label = R.string.porcentaje_beneficio,
+                leadingIcon = R.drawable.porcentaje,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }),
+                value = porcBeneficioEntrada,
+                onValueChanged = { porcBeneficioEntrada = it },
+                modifier = Modifier
+                    .padding(bottom = 25.dp)
+                    .fillMaxWidth(),
+            )
+            // Mostramos el campo de switch (interruptor) para Sin redondeo
+            CampoNoRedondeo(
+                roundUp = noRedondeoEntrada,
+                onRoundUpChanged = {
+                    // Si se activa el No redondeo, se desactivan los redondeos
+                    noRedondeoEntrada = it
+                    if (noRedondeoEntrada) {
+                        redondeoEntradaAlza = false
+                        redondeoEntradaNormal = false
+                    }
+                    // Si no se activa el No redondeo, activar el redondeo al alza
+                    if (!noRedondeoEntrada && !redondeoEntradaAlza && !redondeoEntradaNormal)
+                        redondeoEntradaAlza = true
+                },
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+            // Mostramos el campo de switch (interruptor) para Redondear benieficio al alza
+            CampoRedondeoAlza(
+                roundUp = redondeoEntradaAlza,
+                onRoundUpChanged = {
+                    redondeoEntradaAlza = it
+                    // Si se activa el redondeo al alza, desactivar el redondeo normal y el sin redondeo
+                    if (redondeoEntradaAlza) {
+                        redondeoEntradaNormal = false
+                        noRedondeoEntrada = false
+                    }
+                },
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+            // Mostramos el campo de switch (interruptor) para Redondear benieficio normal
+            CampoRedondeoNormal(
+                roundUp = redondeoEntradaNormal,
+                onRoundUpChanged = {
+                    redondeoEntradaNormal = it
+                    // Si se activa el redondeo normal, desactivar el redondeo al alza y el sin redondeo
+                    if (redondeoEntradaNormal) {
+                        redondeoEntradaAlza = false
+                        noRedondeoEntrada = false
+                    }
+                },
+                modifier = Modifier.padding(bottom = 20.dp)
+            )
+            // Mostramos el importe de beneficio calculado
+            Text(
+                text = stringResource(R.string.importe_beneficio, importeBeneficio),
+                style = MaterialTheme.typography.titleLarge
+            )
+            // Mostramos el botón copiar el beneficio al portapapeles
+            BotonCopiar {
+                copiarTextoPortapapeles(importeBeneficio, context)
+            }
         }
     }
 }

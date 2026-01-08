@@ -17,6 +17,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -42,43 +44,55 @@ fun pantallaFuncionamiento(navController: NavController){
     var redondeoEntradaNormal by remember { mutableStateOf(false) }
     var noRedondeoEntrada by remember { mutableStateOf(true)}
     var texto : String = ExplicacionSwitchs(redondeoEntradaAlza,redondeoEntradaNormal)
-
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
     Column(modifier = Modifier.statusBarsPadding()
         .padding(horizontal = 40.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                IconButton(
-                    onClick = { navController.navigate("MainActivity") }, modifier = Modifier.padding(start = 50.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.outline_arrow_forward_ios_24),
-                        contentDescription = "flecha hacia delante"
-                    )
-                }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            IconButton(
+                onClick = { navController.navigate("MainActivity") },
+                modifier = Modifier.padding(start = 50.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_arrow_forward_ios_24),
+                    contentDescription = "flecha hacia delante"
+                )
             }
+        }
 
 
         Text("Funcionamiento de la app", fontSize = 25.sp, modifier = Modifier,)
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Aqui pondremos el importe total",fontSize = 15.sp)
-        CampoNumero( label = R.string.importe_base,
+        Text("Aqui pondremos el importe total", fontSize = 15.sp)
+        CampoNumero(
+            label = R.string.importe_base,
             leadingIcon = R.drawable.moneda,
             modifier = Modifier
                 .padding(bottom = 20.dp)
-                .fillMaxWidth())
+                .fillMaxWidth()
+        )
 
 
 
         Spacer(modifier = Modifier.height(5.dp))
-        Text("Aqui pondremos el porcentaje de beneficio que vamos a obtener", modifier = Modifier,fontSize = 15.sp)
-        CampoNumero( label = R.string.importe_beneficio,
+        Text(
+            "Aqui pondremos el porcentaje de beneficio que vamos a obtener",
+            modifier = Modifier,
+            fontSize = 15.sp
+        )
+        CampoNumero(
+            label = R.string.importe_beneficio,
             leadingIcon = R.drawable.porcentaje,
             modifier = Modifier
                 .padding(bottom = 20.dp)
-                .fillMaxWidth())
+                .fillMaxWidth()
+        )
 
 
         Spacer(modifier = Modifier.height(25.dp))
@@ -96,7 +110,7 @@ fun pantallaFuncionamiento(navController: NavController){
                     redondeoEntradaAlza = true
             },
 
-        )
+            )
 
         CampoRedondeoAlzaEx(
             roundUp = redondeoEntradaAlza,
@@ -123,20 +137,21 @@ fun pantallaFuncionamiento(navController: NavController){
             },
             modifier = Modifier.padding(bottom = 20.dp)
         )
-        Text(texto, modifier = Modifier,fontSize = 15.sp)
+        Text(texto, modifier = Modifier, fontSize = 15.sp)
         Spacer(modifier = Modifier.height(25.dp))
 
         Button(onClick = {}) {
-           Text("Copiar")
-       }
+            Text("Copiar")
+        }
         Spacer(modifier = Modifier.height(5.dp))
-      Text("Al darle a este boton se copiara el importe en nuestro portapapeles", modifier = Modifier, fontSize = 15.sp)
+        Text(
+            "Al darle a este boton se copiara el importe en nuestro portapapeles",
+            modifier = Modifier,
+            fontSize = 15.sp
+        )
 
 
-
-
-
-
+    }
     }
 
 }
